@@ -1,0 +1,10 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    net-dns (0.8.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  net-dns
