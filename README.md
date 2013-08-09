@@ -25,3 +25,5 @@ receives a HTTP verb that is too long.
 ```
 
 The duration is a float that represents the number of seconds elapsed.
+If status is not `:ok` then it means the address given returned
+something other than an HTTP 405.
