@@ -24,3 +24,4 @@ receives a HTTP verb that is too long.
   {:status=>:ok, :node=>"9.10.11.12", :duration=>0.215337, :checked_at=>1376014065.998894}
 ```
 
+The duration is a float that represents the number of seconds elapsed.
