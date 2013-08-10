@@ -11,6 +11,11 @@ NAMESERVERS = '204.246.160.5' # ns-941.amazon.com
 DEBUG = false
 DEFAULT_PING_COUNT = 4
 
+trap("INT") {
+    puts "Received interrupt, exiting..."
+    exit
+}
+
 class ElbPing < Net::HTTPRequest
   METHOD = "A" * (MAX_VERB_LENGTH + 1)
   REQUEST_HAS_BODY = false
@@ -60,10 +65,10 @@ end
 target = ARGV[0]
 nodes = find_elb_nodes(target)
 
+# TODO: Display summary of results (in aggregate and per-node)
 (1..DEFAULT_PING_COUNT).each { |i|
     nodes.map { |node|
         status = ping_node(node)
         display_response(status)
     }
 }
-
