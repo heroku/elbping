@@ -5,6 +5,10 @@ Load Balancer. It only works for ELBs in HTTP mode and works by
 triggering an HTTP 405 (METHOD NOT ALLOWED) error caused when the ELB
 receives a HTTP verb that is too long.
 
+Technically, with minor changes, you could resolve any host name and
+measure the response time of each host listed in those A records but
+this was designed specifically with ELBs in mind.
+
 ## Installation
 
 ```
@@ -19,11 +23,13 @@ receives a HTTP verb that is too long.
   $ ./ping-elb.rb
   Usage: ./ping-elb.rb <elb_hostname>
   $ ./ping-elb.rb elb01234-5678910.us-east-1.elb.amazonaws.com
-  {:status=>:ok, :node=>"1.2.3.4", :duration=>0.226503, :checked_at=>1376014065.557045}
-  {:status=>:ok, :node=>"5.6.7.8", :duration=>0.215092, :checked_at=>1376014065.7837021}
-  {:status=>:ok, :node=>"9.10.11.12", :duration=>0.215337, :checked_at=>1376014065.998894}
+  Response from 1.1.1.1: code=405 time=190 ms
+  Response from 2.2.2.2: code=405 time=192 ms
+  Response from 1.1.1.1: code=405 time=196 ms
+  Response from 2.2.2.2: code=405 time=192 ms
+  Response from 1.1.1.1: code=405 time=196 ms
+  Response from 2.2.2.2: code=405 time=192 ms
+  Response from 1.1.1.1: code=405 time=196 ms
+  Response from 2.2.2.2: code=405 time=192 ms
 ```
 
-The duration is a float that represents the number of seconds elapsed.
-If status is not `:ok` then it means the address given returned
-something other than an HTTP 405.

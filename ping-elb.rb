@@ -9,6 +9,7 @@ require "net/http"
 MAX_VERB_LENGTH = 127
 NAMESERVERS = '204.246.160.5' # ns-941.amazon.com
 DEBUG = false
+DEFAULT_PING_COUNT = 4
 
 class ElbPing < Net::HTTPRequest
   METHOD = "A" * (MAX_VERB_LENGTH + 1)
@@ -20,12 +21,10 @@ def ping_node(node, port=80, path="/")
   start = Time.now.getutc
   http = Net::HTTP.new(node, port.to_s)
   response = http.request(ElbPing.new(path))
-  status = 'ok' unless response.code == 405 rescue 'badcode'
 
-  {:status => status.to_sym,
+  {:code => response.code,
     :node => node,
-    :duration => (Time.now.getutc - start),
-    :checked_at => start.to_f}
+    :duration => (Time.now.getutc - start)}
 end
 
 def find_elb_nodes(target)
@@ -45,6 +44,14 @@ def find_elb_nodes(target)
   nodes
 end
 
+def display_response(status)
+    node = status[:node]
+    code = status[:code]
+    duration = status[:duration]
+
+    puts "Response from #{node}: code=#{code} time=#{(duration * 1000).to_i} ms"
+end
+
 if ARGV.size < 1
   puts "Usage: #{$0} <elb_hostname>"
   exit(false)
@@ -52,5 +59,11 @@ end
 
 target = ARGV[0]
 nodes = find_elb_nodes(target)
-nodes.map { |node| puts ping_node(node) }
+
+(1..DEFAULT_PING_COUNT).each { |i|
+    nodes.map { |node|
+        status = ping_node(node)
+        display_response(status)
+    }
+}
 
