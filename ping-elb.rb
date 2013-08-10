@@ -6,8 +6,6 @@ require 'bundler/setup'
 require 'net/dns'
 require "net/http"
 
-include Net::DNS
-
 MAX_VERB_LENGTH = ENV['PING_ELB_MAXVERBLEN'] || 127
 DEFAULT_NAMESERVER = ENV['PING_ELB_NS'] || 'ns-941.amazon.com'
 DEFAULT_PING_COUNT = ENV['PING_ELB_PINGCOUNT'] || 4 # TODO: override by opts
