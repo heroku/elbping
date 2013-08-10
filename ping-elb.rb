@@ -6,8 +6,11 @@ require 'bundler/setup'
 require 'net/dns'
 require "net/http"
 
+include Net::DNS
+
 MAX_VERB_LENGTH = 127
-NAMESERVERS = '204.246.160.5' # ns-941.amazon.com
+DEFAULT_NAMESERVER = ENV['PING_ELB_NS'] || 'ns-941.amazon.com'
+NS_ADDRS = Resolver(DEFAULT_NAMESERVER).answer.map { |rr| rr.address.to_s }
 DEBUG = false
 DEFAULT_PING_COUNT = 4
 
@@ -35,7 +38,7 @@ end
 def find_elb_nodes(target)
   resolver = Net::DNS::Resolver.new(
     :use_tcp => true,
-    :nameservers => NAMESERVERS,
+    :nameservers => NS_ADDRS,
     :retry => 5)
 
   if DEBUG
