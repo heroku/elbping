@@ -21,11 +21,16 @@ this was designed specifically with ELBs in mind.
 
 ```
   $ ./ping-elb.rb
-  Usage: ./ping-elb.rb <elb_hostname>
+  Usage: ./ping-elb.rb [options] <elb hostname>
+      -N, --nameserver NAMESERVER      Use NAMESERVER to perform DNS queries
+      -L, --verb-length LENGTH         Use verb LENGTH characters long
+      -W, --timeout SECONDS            Use timeout of SECONDS for HTTP requests
+      -w, --wait SECONDS               Wait SECONDS between pings (default: 0)
+      -c, --count COUNT                Ping each node COUNT times
   $ ./ping-elb.rb elb01234-5678910.us-east-1.elb.amazonaws.com
   Response from 1.1.1.1: code=405 time=190 ms
   Response from 2.2.2.2: code=405 time=192 ms
-  Response from 1.1.1.1: code=405 time=196 ms
+  Response from 1.1.1.1: code=Timeout time=196 ms
   Response from 2.2.2.2: code=405 time=192 ms
   Response from 1.1.1.1: code=405 time=196 ms
   Response from 2.2.2.2: code=405 time=192 ms
