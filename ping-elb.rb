@@ -105,8 +105,7 @@ def display_response(status)
   puts "Response from #{node}: code=#{code.to_s} time=#{duration} ms"
 end
 
-# Main entry point of the program
-
+# Display summary of results (in aggregate and per-node)
 def display_summary(total_summary, node_summary)
   requests = total_summary[:reqs_attempted]
   responses = total_summary[:reqs_completed]
@@ -133,6 +132,7 @@ def display_summary(total_summary, node_summary)
   }
 end
 
+# Main entry point of the program
 def main
   if ARGV.size < 1
     usage
@@ -156,7 +156,6 @@ def main
     exit
   }
 
-  # TODO: Display summary of results (in aggregate and per-node)
   (1..OPTIONS[:count]).each { |i|
     sleep OPTIONS[:wait] if i > 1
 
