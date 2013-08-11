@@ -10,12 +10,6 @@ require 'optparse'
 $stderr.sync = true
 $stdout.sync = true
 
-# Catch ctrl-c
-trap("INT") {
-  puts "Received interrupt, exiting..."
-  exit
-}
-
 # Set up default options
 OPTIONS = {}
 OPTIONS[:verb_len]      = ENV['PING_ELB_MAXVERBLEN']    || 128
@@ -81,11 +75,11 @@ def ping_node(node, port=80, path="/")
   http.ssl_timeout      = OPTIONS[:timeout] # untested
 
   error = nil
-  response = http.request(ElbPingRequest.new(path)) rescue error = 'Timeout'
+  response = http.request(ElbPingRequest.new(path)) rescue error = :timeout
 
   {:code => error || response.code,
     :node => node,
-    :duration => (Time.now.getutc - start)}
+    :duration => ((Time.now.getutc - start) * 1000).to_i} # returns in ms
 end
 
 # Resolve an ELB address to a list of node IPs
@@ -108,10 +102,37 @@ def display_response(status)
   code = status[:code]
   duration = status[:duration]
 
-  puts "Response from #{node}: code=#{code} time=#{(duration * 1000).to_i} ms"
+  puts "Response from #{node}: code=#{code.to_s} time=#{duration} ms"
 end
 
 # Main entry point of the program
+
+def display_summary(total_summary, node_summary)
+  requests = total_summary[:reqs_attempted]
+  responses = total_summary[:reqs_completed]
+  loss = (1 - (responses.to_f/requests)) * 100
+
+  latencies = total_summary[:latencies]
+  avg_latency = (latencies.inject { |sum, el| sum + el }.to_f / latencies.size).to_i # ms
+
+  puts '--- total statistics ---'
+  puts "#{requests} requests, #{responses} responses, #{loss.to_i}% loss"
+  puts "min/avg/max = #{latencies.min}/#{avg_latency}/#{latencies.max} ms"
+
+  node_summary.each { |node, summary|
+    requests = summary[:reqs_attempted]
+    responses = summary[:reqs_completed]
+    loss = (1 - (responses.to_f/requests)) * 100
+
+    latencies = summary[:latencies]
+    avg_latency = (latencies.inject { |sum, el| sum + el }.to_f / latencies.size).to_i # ms
+
+    puts "--- #{node} statistics ---"
+    puts "#{requests} requests, #{responses} responses, #{loss.to_i}% loss"
+    puts "min/avg/max = #{latencies.min}/#{avg_latency}/#{latencies.max} ms"
+  }
+end
+
 def main
   if ARGV.size < 1
     usage
@@ -120,15 +141,41 @@ def main
   target = ARGV[0]
   nodes = find_elb_nodes(target)
 
+  # Set up summary objects
+  total_summary = {
+    :reqs_attempted =>  0,
+    :reqs_completed =>  0,
+    :latencies      => [],
+  }
+  node_summary = {}
+  nodes.each { |node| node_summary[node] = total_summary.clone }
+
+  # Catch ctrl-c
+  trap("INT") {
+    display_summary(total_summary, node_summary)
+    exit
+  }
+
   # TODO: Display summary of results (in aggregate and per-node)
   (1..OPTIONS[:count]).each { |i|
     sleep OPTIONS[:wait] if i > 1
 
     nodes.map { |node|
+      total_summary[:reqs_attempted] += 1
+      node_summary[node][:reqs_attempted] += 1
       status = ping_node(node)
+
+      unless status[:code] == :timeout
+        total_summary[:reqs_completed] += 1
+        total_summary[:latencies] += [status[:duration]]
+        node_summary[node][:reqs_completed] += 1
+        node_summary[node][:latencies] += [status[:duration]]
+      end
+
       display_response(status)
     }
   }
+  display_summary(total_summary, node_summary)
 end
 
 main

@@ -27,14 +27,16 @@ this was designed specifically with ELBs in mind.
       -W, --timeout SECONDS            Use timeout of SECONDS for HTTP requests
       -w, --wait SECONDS               Wait SECONDS between pings (default: 0)
       -c, --count COUNT                Ping each node COUNT times
-  $ ./ping-elb.rb elb01234-5678910.us-east-1.elb.amazonaws.com
-  Response from 1.1.1.1: code=405 time=190 ms
-  Response from 2.2.2.2: code=405 time=192 ms
-  Response from 1.1.1.1: code=Timeout time=196 ms
-  Response from 2.2.2.2: code=405 time=192 ms
-  Response from 1.1.1.1: code=405 time=196 ms
-  Response from 2.2.2.2: code=405 time=192 ms
-  Response from 1.1.1.1: code=405 time=196 ms
-  Response from 2.2.2.2: code=405 time=192 ms
+  $ ./ping-elb.rb test-elb-868888812.us-east-1.elb.amazonaws.com
+  Response from 54.225.140.20: code=405 time=238 ms
+  Response from 54.225.140.20: code=405 time=234 ms
+  Response from 54.225.140.20: code=405 time=228 ms
+  Response from 54.225.140.20: code=405 time=267 ms
+  --- total statistics ---
+  4 requests, 4 responses, 0% loss
+  min/avg/max = 228/241/267 ms
+  --- 54.225.140.20 statistics ---
+  4 requests, 4 responses, 0% loss
+  min/avg/max = 228/241/267 ms
 ```
 
