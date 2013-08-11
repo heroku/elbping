@@ -9,6 +9,10 @@ Technically, with minor changes, you could resolve any host name and
 measure the response time of each host listed in those A records but
 this was designed specifically with ELBs in mind.
 
+## TODO
+
+* Make tool usable as a gem or whatever
+
 ## Installation
 
 ```
@@ -20,14 +24,14 @@ this was designed specifically with ELBs in mind.
 ## Usage
 
 ```
-  $ ./ping-elb.rb
+  $ ./bin/ping-elb.rb
   Usage: ./ping-elb.rb [options] <elb hostname>
       -N, --nameserver NAMESERVER      Use NAMESERVER to perform DNS queries
       -L, --verb-length LENGTH         Use verb LENGTH characters long
       -W, --timeout SECONDS            Use timeout of SECONDS for HTTP requests
       -w, --wait SECONDS               Wait SECONDS between pings (default: 0)
       -c, --count COUNT                Ping each node COUNT times
-  $ ./ping-elb.rb test-elb-868888812.us-east-1.elb.amazonaws.com
+  $ ./bin/ping-elb.rb test-elb-868888812.us-east-1.elb.amazonaws.com
   Response from 54.225.140.20: code=405 time=238 ms
   Response from 54.225.140.20: code=405 time=234 ms
   Response from 54.225.140.20: code=405 time=228 ms
