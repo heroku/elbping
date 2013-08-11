@@ -7,6 +7,9 @@ require 'net/dns'
 require "net/http"
 require 'optparse'
 
+$stderr.sync = true
+$stdout.sync = true
+
 # Catch ctrl-c
 trap("INT") {
     puts "Received interrupt, exiting..."
@@ -14,7 +17,6 @@ trap("INT") {
 }
 
 OPTIONS = {}
-OPTIONS[:debug]         = ENV['PING_ELB_DEBUG']
 OPTIONS[:verb_len]      = ENV['PING_ELB_MAXVERBLEN']    || 128
 OPTIONS[:nameserver]    = ENV['PING_ELB_NS']            || 'ns-941.amazon.com'
 OPTIONS[:count]         = ENV['PING_ELB_PINGCOUNT']     || 4
@@ -23,11 +25,6 @@ OPTIONS[:wait]          = ENV['PING_ELB_WAIT']          || 0
 
 PARSER = OptionParser.new do |opts|
     opts.banner = "Usage: #{$0} [options] <elb hostname>"
-
-    # -d (flag only)
-    opts.on("-d", "--debug", "Run with extra debugging turned on") do |d|
-        OPTIONS[:debug] = d
-    end
 
     # -N _nameserver_
     opts.on("-N NAMESERVER", "--nameserver NAMESERVER", "Use NAMESERVER to perform DNS queries") do |ns|
@@ -54,6 +51,12 @@ PARSER = OptionParser.new do |opts|
         OPTIONS[:count] = n
     end
 end
+
+def usage
+    puts PARSER.help
+    exit(false)
+end
+
 PARSER.parse!(ARGV) rescue usage
 
 # Resolve the nameserver hostname to a list of IP addresses
@@ -90,10 +93,6 @@ def find_elb_nodes(target)
     :nameservers => NS_ADDRS,
     :retry => 5)
 
-  if OPTIONS[:debug]
-    resolver.log_level = Net::DNS::DEBUG
-  end
-
   resp = resolver.query(target, Net::DNS::ANY)
 
   nodes = []
@@ -108,11 +107,6 @@ def display_response(status)
     duration = status[:duration]
 
     puts "Response from #{node}: code=#{code} time=#{(duration * 1000).to_i} ms"
-end
-
-def usage
-    puts PARSER.help
-    exit(false)
 end
 
 # Main entry point of the program
