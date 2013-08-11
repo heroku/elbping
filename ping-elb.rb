@@ -12,10 +12,11 @@ $stdout.sync = true
 
 # Catch ctrl-c
 trap("INT") {
-    puts "Received interrupt, exiting..."
-    exit
+  puts "Received interrupt, exiting..."
+  exit
 }
 
+# Set up default options
 OPTIONS = {}
 OPTIONS[:verb_len]      = ENV['PING_ELB_MAXVERBLEN']    || 128
 OPTIONS[:nameserver]    = ENV['PING_ELB_NS']            || 'ns-941.amazon.com'
@@ -23,40 +24,41 @@ OPTIONS[:count]         = ENV['PING_ELB_PINGCOUNT']     || 4
 OPTIONS[:timeout]       = ENV['PING_ELB_TIMEOUT']       || 10
 OPTIONS[:wait]          = ENV['PING_ELB_WAIT']          || 0
 
+# Build parser for command line options
 PARSER = OptionParser.new do |opts|
-    opts.banner = "Usage: #{$0} [options] <elb hostname>"
+  opts.banner = "Usage: #{$0} [options] <elb hostname>"
 
-    # -N _nameserver_
-    opts.on("-N NAMESERVER", "--nameserver NAMESERVER", "Use NAMESERVER to perform DNS queries") do |ns|
-        OPTIONS[:nameserver] = ns
-    end
+  # -N _nameserver_
+  opts.on("-N NAMESERVER", "--nameserver NAMESERVER", "Use NAMESERVER to perform DNS queries") do |ns|
+    OPTIONS[:nameserver] = ns
+  end
 
-    # -L _verb length_
-    opts.on("-L LENGTH", "--verb-length LENGTH", Integer, "Use verb LENGTH characters long") do |n|
-        OPTIONS[:verb_len] = n
-    end
+  # -L _verb length_
+  opts.on("-L LENGTH", "--verb-length LENGTH", Integer, "Use verb LENGTH characters long") do |n|
+    OPTIONS[:verb_len] = n
+  end
 
-    # -W _timeout_
-    opts.on("-W SECONDS", "--timeout SECONDS", Integer, "Use timeout of SECONDS for HTTP requests") do |n|
-        OPTIONS[:timeout] = n
-    end
+  # -W _timeout_
+  opts.on("-W SECONDS", "--timeout SECONDS", Integer, "Use timeout of SECONDS for HTTP requests") do |n|
+    OPTIONS[:timeout] = n
+  end
 
-    # -w _wait_
-    opts.on("-w SECONDS", "--wait SECONDS", Integer, "Wait SECONDS between pings (default: 0)") do |n|
-        OPTIONS[:wait] = n
-    end
+  # -w _wait_
+  opts.on("-w SECONDS", "--wait SECONDS", Integer, "Wait SECONDS between pings (default: 0)") do |n|
+    OPTIONS[:wait] = n
+  end
 
-    # -c _count_
-    opts.on("-c COUNT", "--count COUNT", Integer, "Ping each node COUNT times") do |n|
-        OPTIONS[:count] = n
-    end
+  # -c _count_
+  opts.on("-c COUNT", "--count COUNT", Integer, "Ping each node COUNT times") do |n|
+    OPTIONS[:count] = n
+  end
 end
 
+# Parse options
 def usage
-    puts PARSER.help
-    exit(false)
+  puts PARSER.help
+  exit(false)
 end
-
 PARSER.parse!(ARGV) rescue usage
 
 # Resolve the nameserver hostname to a list of IP addresses
@@ -102,31 +104,31 @@ end
 
 # Format and display the ping data
 def display_response(status)
-    node = status[:node]
-    code = status[:code]
-    duration = status[:duration]
+  node = status[:node]
+  code = status[:code]
+  duration = status[:duration]
 
-    puts "Response from #{node}: code=#{code} time=#{(duration * 1000).to_i} ms"
+  puts "Response from #{node}: code=#{code} time=#{(duration * 1000).to_i} ms"
 end
 
 # Main entry point of the program
 def main
-    if ARGV.size < 1
-        usage
-    end
+  if ARGV.size < 1
+    usage
+  end
 
-    target = ARGV[0]
-    nodes = find_elb_nodes(target)
+  target = ARGV[0]
+  nodes = find_elb_nodes(target)
 
-    # TODO: Display summary of results (in aggregate and per-node)
-    (1..OPTIONS[:count]).each { |i|
-        sleep OPTIONS[:wait] if i > 1
+  # TODO: Display summary of results (in aggregate and per-node)
+  (1..OPTIONS[:count]).each { |i|
+    sleep OPTIONS[:wait] if i > 1
 
-        nodes.map { |node|
-            status = ping_node(node)
-            display_response(status)
-        }
+    nodes.map { |node|
+      status = ping_node(node)
+      display_response(status)
     }
+  }
 end
 
 main
