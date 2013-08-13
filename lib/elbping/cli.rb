@@ -21,19 +21,24 @@ module ElbPing
     PARSER = OptionParser.new do |opts|
       opts.banner = "Usage: #{$0} [options] <elb hostname>"
 
-      opts.on("-N NAMESERVER", "--nameserver NAMESERVER", "Use NAMESERVER to perform DNS queries") do |ns|
+      opts.on("-N NAMESERVER", "--nameserver NAMESERVER",
+        "Use NAMESERVER to perform DNS queries (default: #{OPTIONS[:nameserver]})") do |ns|
         OPTIONS[:nameserver] = ns
       end
-      opts.on("-L LENGTH", "--verb-length LENGTH", Integer, "Use verb LENGTH characters long") do |n|
+      opts.on("-L LENGTH", "--verb-length LENGTH", Integer,
+        "Use verb LENGTH characters long (default: #{OPTIONS[:verb_len]})") do |n|
         OPTIONS[:verb_len] = n
       end
-      opts.on("-W SECONDS", "--timeout SECONDS", Integer, "Use timeout of SECONDS for HTTP requests") do |n|
+      opts.on("-W SECONDS", "--timeout SECONDS", Integer,
+        "Use timeout of SECONDS for HTTP requests (default: #{OPTIONS[:timeout]})") do |n|
         OPTIONS[:timeout] = n
       end
-      opts.on("-w SECONDS", "--wait SECONDS", Integer, "Wait SECONDS between pings (default: 0)") do |n|
+      opts.on("-w SECONDS", "--wait SECONDS", Integer,
+        "Wait SECONDS between pings (default: #{OPTIONS[:wait]})") do |n|
         OPTIONS[:wait] = n
       end
-      opts.on("-c COUNT", "--count COUNT", Integer, "Ping each node COUNT times") do |n|
+      opts.on("-c COUNT", "--count COUNT", Integer,
+        "Ping each node COUNT times (default: #{OPTIONS[:count]})") do |n|
         OPTIONS[:count] = n
       end
     end
