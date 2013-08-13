@@ -20,7 +20,11 @@ module ElbPing
       http.ssl_timeout      = timeout # untested
 
       error = nil
-      response = http.request(ping_request.new(path)) rescue error = :timeout
+      begin
+        response = http.request(ping_request.new(path))
+      rescue StandardError
+        error = :timeout
+      end
 
       {:code => error || response.code,
         :node => node,

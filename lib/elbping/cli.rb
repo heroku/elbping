@@ -52,6 +52,22 @@ module ElbPing
     # Main entry point of the program
     def self.main
       PARSER.parse!(ARGV) rescue usage
+      run = true
+
+      # Set up summary objects
+      total_summary = {
+        :reqs_attempted =>  0,
+        :reqs_completed =>  0,
+        :latencies      => [],
+      }
+      node_summary = {}
+
+      # Catch ctrl-c
+      trap("SIGINT") {
+        #ElbPing::Display.summary(total_summary, node_summary)
+        #exit!
+        run = false
+      }
 
       if ARGV.size < 1
         usage
@@ -70,23 +86,10 @@ module ElbPing
         exit(false)
       end
 
-      # Set up summary objects
-      total_summary = {
-        :reqs_attempted =>  0,
-        :reqs_completed =>  0,
-        :latencies      => [],
-      }
-      node_summary = {}
       nodes.each { |node| node_summary[node] = total_summary.clone }
 
-      # Catch ctrl-c
-      trap("INT") {
-        ElbPing::Display.summary(total_summary, node_summary)
-        exit
-      }
-
       iteration = 0
-      while OPTIONS[:count] < 1 || iteration < OPTIONS[:count]
+      while (OPTIONS[:count] < 1 || iteration < OPTIONS[:count]) && run
         sleep OPTIONS[:wait] if iteration > 0
 
         nodes.map { |node|

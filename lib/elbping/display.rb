@@ -17,7 +17,11 @@ module ElbPing
       loss = (1 - (responses.to_f/requests)) * 100
 
       latencies = total_summary[:latencies]
-      avg_latency = (latencies.inject { |sum, el| sum + el }.to_f / latencies.size).to_i # ms
+      avg_latency = 0
+      unless latencies.size == 0
+        sum_latency = latencies.inject { |sum, el| sum + el} || 0
+        avg_latency = (sum_latency.to_f / latencies.size).to_i # ms
+      end
 
       node_summary.each { |node, summary|
         requests = summary[:reqs_attempted]
@@ -25,7 +29,11 @@ module ElbPing
         loss = (1 - (responses.to_f/requests)) * 100
 
         latencies = summary[:latencies]
-        avg_latency = (latencies.inject { |sum, el| sum + el }.to_f / latencies.size).to_i # ms
+        avg_latency = 0
+        unless latencies.size == 0
+          sum_latency = latencies.inject { |sum, el| sum + el} || 0
+          avg_latency = (sum_latency.to_f / latencies.size).to_i # ms
+        end
 
         puts "--- #{node} statistics ---"
         puts "#{requests} requests, #{responses} responses, #{loss.to_i}% loss"
