@@ -85,9 +85,9 @@ module ElbPing
         exit
       }
 
-      i = 0
-      while OPTIONS[:count] < 1 || i < OPTIONS[:count]
-        sleep OPTIONS[:wait] if i > 0
+      iteration = 0
+      while OPTIONS[:count] < 1 || iteration < OPTIONS[:count]
+        sleep OPTIONS[:wait] if iteration > 0
 
         nodes.map { |node|
           total_summary[:reqs_attempted] += 1
@@ -102,8 +102,8 @@ module ElbPing
           end
 
           ElbPing::Display.response(status)
-          i += 1
         }
+        iteration += 1
       end
       ElbPing::Display.summary(total_summary, node_summary)
     end
