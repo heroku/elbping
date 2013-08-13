@@ -33,10 +33,10 @@ this was designed specifically with ELBs in mind.
   Response from 54.225.140.20: code=405 time=234 ms
   Response from 54.225.140.20: code=405 time=228 ms
   Response from 54.225.140.20: code=405 time=267 ms
-  --- total statistics ---
+  --- 54.225.140.20 statistics ---
   4 requests, 4 responses, 0% loss
   min/avg/max = 228/241/267 ms
-  --- 54.225.140.20 statistics ---
+  --- total statistics ---
   4 requests, 4 responses, 0% loss
   min/avg/max = 228/241/267 ms
 ```
