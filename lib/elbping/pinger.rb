@@ -20,13 +20,20 @@ module ElbPing
       http.ssl_timeout      = timeout # untested
 
       error = nil
+      exc = nil
       begin
         response = http.request(ping_request.new(path))
-      rescue StandardError
+      rescue Errno::ECONNREFUSED
+        error = :econnrefused
+      rescue Timeout::Error
         error = :timeout
+      rescue StandardError => e
+        exc = e # because I don't understand scope in ruby yet
+        error = :exception
       end
 
       {:code => error || response.code,
+        :exception => exc,
         :node => node,
         :duration => ((Time.now.getutc - start) * 1000).to_i} # returns in ms
     end

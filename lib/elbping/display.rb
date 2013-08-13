@@ -6,8 +6,10 @@ module ElbPing
       node = status[:node]
       code = status[:code]
       duration = status[:duration]
+      exc = status[:exception]
+      exc_display = exc ? 'exception=#{exception}' : ''
 
-      puts "Response from #{node}: code=#{code.to_s} time=#{duration} ms"
+      puts "Response from #{node}: code=#{code.to_s} time=#{duration} ms #{exc_display}"
     end
 
     # Display summary of results (in aggregate and per-node)
