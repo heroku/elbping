@@ -27,6 +27,10 @@ module ElbPing
         error = :econnrefused
       rescue Timeout::Error
         error = :timeout
+      rescue Interrupt
+        raise
+      rescue SystemExit
+        raise
       rescue StandardError => e
         exc = e # because I don't understand scope in ruby yet
         error = :exception

@@ -7,7 +7,7 @@ module ElbPing
       code = status[:code]
       duration = status[:duration]
       exc = status[:exception]
-      exc_display = exc ? 'exception=#{exception}' : ''
+      exc_display = exc ? "exception=#{exc}" : ''
 
       puts "Response from #{node}: code=#{code.to_s} time=#{duration} ms #{exc_display}"
     end
