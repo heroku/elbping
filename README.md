@@ -41,7 +41,7 @@ something like the following will work:
       -W, --timeout SECONDS            Use timeout of SECONDS for HTTP requests (default: 10)
       -w, --wait SECONDS               Wait SECONDS between pings (default: 0)
       -c, --count COUNT                Ping each node COUNT times (default: 0)
-  $ elbping test-elb-868888812.us-east-1.elb.amazonaws.com
+  $ elbping -c 4 test-elb-868888812.us-east-1.elb.amazonaws.com
   Response from 54.225.140.20: code=405 time=238 ms
   Response from 54.225.140.20: code=405 time=234 ms
   Response from 54.225.140.20: code=405 time=228 ms
