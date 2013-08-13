@@ -13,7 +13,7 @@ module ElbPing
     OPTIONS = {}
     OPTIONS[:verb_len]      = ENV['PING_ELB_MAXVERBLEN']    || 128
     OPTIONS[:nameserver]    = ENV['PING_ELB_NS']            || 'ns-941.amazon.com'
-    OPTIONS[:count]         = ENV['PING_ELB_PINGCOUNT']     || 4
+    OPTIONS[:count]         = ENV['PING_ELB_PINGCOUNT']     || 0
     OPTIONS[:timeout]       = ENV['PING_ELB_TIMEOUT']       || 10
     OPTIONS[:wait]          = ENV['PING_ELB_WAIT']          || 0
 
@@ -75,8 +75,9 @@ module ElbPing
         exit
       }
 
-      (1..OPTIONS[:count]).each { |i|
-        sleep OPTIONS[:wait] if i > 1
+      i = 0
+      while OPTIONS[:count] < 1 || i < OPTIONS[:count]
+        sleep OPTIONS[:wait] if i > 0
 
         nodes.map { |node|
           total_summary[:reqs_attempted] += 1
@@ -91,8 +92,9 @@ module ElbPing
           end
 
           ElbPing::Display.response(status)
+          i += 1
         }
-      }
+      end
       ElbPing::Display.summary(total_summary, node_summary)
     end
   end
