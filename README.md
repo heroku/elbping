@@ -1,6 +1,6 @@
-# ping-elb
+# elbping
 
-`ping-elb` is a tool to ping all of the nodes behind an Amazon Elastic
+`elbping` is a tool to ping all of the nodes behind an Amazon Elastic
 Load Balancer. It only works for ELBs in HTTP mode and works by
 triggering an HTTP 405 (METHOD NOT ALLOWED) error caused when the ELB
 receives a HTTP verb that is too long.
@@ -9,14 +9,10 @@ Technically, with minor changes, you could resolve any host name and
 measure the response time of each host listed in those A records but
 this was designed specifically with ELBs in mind.
 
-## TODO
-
-* Make tool usable as a gem or whatever
-
 ## Installation
 
 ```
-  $ git clone git@github.com:chooper/ping-elb.git
+  $ git clone git@github.com:chooper/elbping.git
   $ cd ping-elb
   $ gem build ./elbping.gemspec
   $ gem install ./elbping-*.gem
