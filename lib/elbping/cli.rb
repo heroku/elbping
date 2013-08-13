@@ -58,7 +58,17 @@ module ElbPing
       end
 
       target = ARGV[0]
-      nodes = ElbPing::Resolver.find_elb_nodes(target, OPTIONS[:nameserver])
+      begin
+        nodes = ElbPing::Resolver.find_elb_nodes(target, OPTIONS[:nameserver])
+      rescue
+        puts "Error querying DNS for #{target} (NS: #{OPTIONS[:nameserver]})"
+        exit(false)
+      end
+
+      if nodes.size < 1
+        puts "Could not find any ELB nodes, no pings sent."
+        exit(false)
+      end
 
       # Set up summary objects
       total_summary = {
