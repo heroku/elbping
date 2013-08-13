@@ -1,7 +1,7 @@
 
 require 'net/dns'
 
-module ElbTool
+module ElbPing
   module Resolver
     # Resolve an ELB address to a list of node IPs
     def self.find_elb_nodes(target, nameserver)

@@ -1,7 +1,7 @@
 
 require "net/http"
 
-module ElbTool
+module ElbPing
   module HttpPinger
     # Make HTTP request to given node using custom request method
     def self.ping_node(node, verb_len, timeout, port=80, path="/")

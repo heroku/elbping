@@ -2,11 +2,11 @@
 
 require 'optparse'
 
-require './lib/elbtool/pinger.rb'
-require './lib/elbtool/resolver.rb'
-require './lib/elbtool/display.rb'
+require 'elbping/pinger.rb'
+require 'elbping/resolver.rb'
+require 'elbping/display.rb'
 
-module ElbTool
+module ElbPing
   module CLI
 
     # Set up default options
@@ -53,7 +53,7 @@ module ElbTool
       end
 
       target = ARGV[0]
-      nodes = ElbTool::Resolver.find_elb_nodes(target, OPTIONS[:nameserver])
+      nodes = ElbPing::Resolver.find_elb_nodes(target, OPTIONS[:nameserver])
 
       # Set up summary objects
       total_summary = {
@@ -66,7 +66,7 @@ module ElbTool
 
       # Catch ctrl-c
       trap("INT") {
-        ElbTool::Display.summary(total_summary, node_summary)
+        ElbPing::Display.summary(total_summary, node_summary)
         exit
       }
 
@@ -76,7 +76,7 @@ module ElbTool
         nodes.map { |node|
           total_summary[:reqs_attempted] += 1
           node_summary[node][:reqs_attempted] += 1
-          status = ElbTool::HttpPinger.ping_node(node, OPTIONS[:verb_len], OPTIONS[:timeout])
+          status = ElbPing::HttpPinger.ping_node(node, OPTIONS[:verb_len], OPTIONS[:timeout])
 
           unless status[:code] == :timeout
             total_summary[:reqs_completed] += 1
@@ -85,10 +85,10 @@ module ElbTool
             node_summary[node][:latencies] += [status[:duration]]
           end
 
-          ElbTool::Display.response(status)
+          ElbPing::Display.response(status)
         }
       }
-      ElbTool::Display.summary(total_summary, node_summary)
+      ElbPing::Display.summary(total_summary, node_summary)
     end
   end
 end

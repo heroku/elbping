@@ -3,10 +3,10 @@
 require 'rubygems'
 require 'bundler/setup'
 
-require './lib/elbtool/cli.rb'
+require 'elbping/cli.rb'
 
 $stderr.sync = true
 $stdout.sync = true
 
-ElbTool::CLI.main
+ElbPing::CLI.main
 

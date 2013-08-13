@@ -1,5 +1,5 @@
 
-module ElbTool
+module ElbPing
   module Display
     # Format and display the ping data
     def self.response(status)

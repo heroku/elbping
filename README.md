@@ -18,20 +18,21 @@ this was designed specifically with ELBs in mind.
 ```
   $ git clone git@github.com:chooper/ping-elb.git
   $ cd ping-elb
-  $ bundle install
+  $ gem build ./elbping.gemspec
+  $ gem install ./elbping-*.gem
 ```
 
 ## Usage
 
 ```
-  $ ./bin/ping-elb.rb
-  Usage: ./ping-elb.rb [options] <elb hostname>
+  $ elbping
+  Usage: elbping [options] <elb hostname>
       -N, --nameserver NAMESERVER      Use NAMESERVER to perform DNS queries
       -L, --verb-length LENGTH         Use verb LENGTH characters long
       -W, --timeout SECONDS            Use timeout of SECONDS for HTTP requests
       -w, --wait SECONDS               Wait SECONDS between pings (default: 0)
       -c, --count COUNT                Ping each node COUNT times
-  $ ./bin/ping-elb.rb test-elb-868888812.us-east-1.elb.amazonaws.com
+  $ elbping test-elb-868888812.us-east-1.elb.amazonaws.com
   Response from 54.225.140.20: code=405 time=238 ms
   Response from 54.225.140.20: code=405 time=234 ms
   Response from 54.225.140.20: code=405 time=228 ms
