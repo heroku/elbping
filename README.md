@@ -11,9 +11,22 @@ this was designed specifically with ELBs in mind.
 
 ## Installation
 
+Installation is as easy as:
+
+```
+  $ gem install elbping
+  Successfully installed elbping-0.0.2
+  1 gem installed
+  Installing ri documentation for elbping-0.0.2...
+  Installing RDoc documentation for elbping-0.0.2...
+```
+
+If you want to build a development version or your own branch or fork,
+something like the following will work:
+
 ```
   $ git clone git@github.com:chooper/elbping.git
-  $ cd ping-elb
+  $ cd elbping
   $ gem build ./elbping.gemspec
   $ gem install ./elbping-*.gem
 ```
