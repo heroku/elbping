@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
 require 'optparse'
+require 'uri'
 
 require 'elbping/pinger.rb'
 require 'elbping/resolver.rb'
@@ -16,11 +17,10 @@ module ElbPing
     OPTIONS[:count]         = ENV['PING_ELB_PINGCOUNT']     || 0
     OPTIONS[:timeout]       = ENV['PING_ELB_TIMEOUT']       || 10
     OPTIONS[:wait]          = ENV['PING_ELB_WAIT']          || 0
-    OPTIONS[:port]          = ENV['PING_ELB_PORT']          || 80
 
     # Build parser for command line options
     PARSER = OptionParser.new do |opts|
-      opts.banner = "Usage: #{$0} [options] <elb hostname>"
+      opts.banner = "Usage: #{$0} [options] <elb uri>"
 
       opts.on("-N NAMESERVER", "--nameserver NAMESERVER",
         "Use NAMESERVER to perform DNS queries (default: #{OPTIONS[:nameserver]})") do |ns|
@@ -41,10 +41,6 @@ module ElbPing
       opts.on("-c COUNT", "--count COUNT", Integer,
         "Ping each node COUNT times (default: #{OPTIONS[:count]})") do |n|
         OPTIONS[:count] = n
-      end
-      opts.on("-p PORT", "--port PORT", Integer,
-        "Port to send requests to (default: #{OPTIONS[:port]})") do |n|
-        OPTIONS[:port] = n
       end
     end
 
@@ -75,12 +71,18 @@ module ElbPing
       if ARGV.size < 1
         usage
       end
+      unless ARGV[0] =~ URI::regexp
+        puts "ERROR: ELB URI does not seem valid"
+        usage
+      end
+      elb_uri_s = ARGV[0]
+      elb_uri = URI.parse(elb_uri_s)
 
-      target = ARGV[0]
       begin
-        nodes = ElbPing::Resolver.find_elb_nodes(target, OPTIONS[:nameserver])
+        nodes = ElbPing::Resolver.find_elb_nodes(elb_uri.host,
+          OPTIONS[:nameserver])
       rescue
-        puts "Error querying DNS for #{target} (NS: #{OPTIONS[:nameserver]})"
+        puts "Error querying DNS for #{elb_uri.host} (NS: #{OPTIONS[:nameserver]})"
         exit(false)
       end
 
@@ -98,8 +100,12 @@ module ElbPing
         nodes.map { |node|
           total_summary[:reqs_attempted] += 1
           node_summary[node][:reqs_attempted] += 1
+
           status = ElbPing::HttpPinger.ping_node(node,
-            OPTIONS[:verb_len], OPTIONS[:timeout], OPTIONS[:port])
+            elb_uri.port,
+            (elb_uri.path == "") ? "/" : elb_uri.path,
+            (elb_uri.scheme == 'https'),
+            OPTIONS[:verb_len], OPTIONS[:timeout])
 
           unless status[:code] == :timeout
             total_summary[:reqs_completed] += 1

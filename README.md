@@ -1,13 +1,13 @@
 # elbping
 
 `elbping` is a tool to ping all of the nodes behind an Amazon Elastic
-Load Balancer. It only works for ELBs in HTTP mode and works by
+Load Balancer. It only works for ELBs in HTTP and HTTPS mode and works by
 triggering an HTTP 405 (METHOD NOT ALLOWED) error caused when the ELB
 receives a HTTP verb that is too long.
 
-Technically, with minor changes, you could resolve any host name and
-measure the response time of each host listed in those A records but
-this was designed specifically with ELBs in mind.
+With minor changes, you could resolve any host name and measure the
+response time of each host listed in those A records but this was
+designed specifically with ELBs in mind.
 
 ## Installation
 
@@ -35,13 +35,13 @@ something like the following will work:
 
 ```
   $ elbping
-  Usage: elbping [options] <elb hostname>
+  Usage: ./bin/elbping [options] <elb uri>
       -N, --nameserver NAMESERVER      Use NAMESERVER to perform DNS queries (default: ns-941.amazon.com)
       -L, --verb-length LENGTH         Use verb LENGTH characters long (default: 128)
       -W, --timeout SECONDS            Use timeout of SECONDS for HTTP requests (default: 10)
       -w, --wait SECONDS               Wait SECONDS between pings (default: 0)
       -c, --count COUNT                Ping each node COUNT times (default: 0)
-  $ elbping -c 4 test-elb-868888812.us-east-1.elb.amazonaws.com
+  $ elbping -c 4 http://test-elb-868888812.us-east-1.elb.amazonaws.com
   Response from 54.243.63.96: code=405 time=210 ms
   Response from 23.21.73.53: code=405 time=189 ms
   Response from 54.243.63.96: code=405 time=191 ms
