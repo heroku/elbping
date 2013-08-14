@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    elbping (0.0.6)
+    elbping (0.0.7)
       net-dns (~> 0.8.0)
 
 GEM
