@@ -16,6 +16,7 @@ module ElbPing
     OPTIONS[:count]         = ENV['PING_ELB_PINGCOUNT']     || 0
     OPTIONS[:timeout]       = ENV['PING_ELB_TIMEOUT']       || 10
     OPTIONS[:wait]          = ENV['PING_ELB_WAIT']          || 0
+    OPTIONS[:port]          = ENV['PING_ELB_PORT']          || 80
 
     # Build parser for command line options
     PARSER = OptionParser.new do |opts|
@@ -41,6 +42,10 @@ module ElbPing
         "Ping each node COUNT times (default: #{OPTIONS[:count]})") do |n|
         OPTIONS[:count] = n
       end
+      opts.on("-p PORT", "--port PORT", Integer,
+        "Port to send requests to (default: #{OPTIONS[:port]})") do |n|
+        OPTIONS[:port] = n
+      end
     end
 
     # Parse options
@@ -64,8 +69,6 @@ module ElbPing
 
       # Catch ctrl-c
       trap("SIGINT") {
-        #ElbPing::Display.summary(total_summary, node_summary)
-        #exit!
         run = false
       }
 
@@ -95,7 +98,8 @@ module ElbPing
         nodes.map { |node|
           total_summary[:reqs_attempted] += 1
           node_summary[node][:reqs_attempted] += 1
-          status = ElbPing::HttpPinger.ping_node(node, OPTIONS[:verb_len], OPTIONS[:timeout])
+          status = ElbPing::HttpPinger.ping_node(node,
+            OPTIONS[:verb_len], OPTIONS[:timeout], OPTIONS[:port])
 
           unless status[:code] == :timeout
             total_summary[:reqs_completed] += 1
