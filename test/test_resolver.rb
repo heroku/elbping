@@ -2,9 +2,6 @@
 require 'test/unit'
 require 'elbping/resolver.rb'
 
-# Basic test to ensure testing works at all.
-# Quis custodiet ipsos custodes?
-
 DEFAULT_NS = ENV['TEST_NS'] || 'ns-941.amazon.com'
 DEFAULT_GOOD_ELB = ENV['TEST_GOOD_ELB'] || 'test-elb-868888812.us-east-1.elb.amazonaws.com' # feels dirty
 
