@@ -106,7 +106,7 @@ module ElbPing
             (elb_uri.scheme == 'https'),
             OPTIONS[:verb_len], OPTIONS[:timeout])
 
-          unless ![:timeout, :econnrefused, :exception].include? status[:code]
+          unless [:timeout, :econnrefused, :exception].include? status[:code]
             total_summary[:reqs_completed] += 1
             total_summary[:latencies] += [status[:duration]]
             node_summary[node][:reqs_completed] += 1
