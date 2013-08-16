@@ -3,6 +3,7 @@ require 'resolv'
 
 class TcpDNS < Resolv::DNS
   # This is largely a copy-paste job from mri/source/lib/resolv.rb
+  # with some of the UDP->TCP fallback logic removed
   def fetch_resource(name, typeclass)
     lazy_initialize
     request = make_tcp_requester
@@ -19,19 +20,7 @@ class TcpDNS < Resolv::DNS
         reply, reply_name = requester.request(sender, tout)
         case reply.rcode
         when RCode::NoError
-          if reply.tc == 1 and not Requester::TCP === requester
-            requester.close
-            # Retry via TCP:
-            requester = make_tcp_requester(nameserver, port)
-            senders = {}
-            # This will use TCP for all remaining candidates (assuming the
-            # current candidate does not already respond successfully via
-            # TCP).  This makes sense because we already know the full
-            # response will not fit in an untruncated UDP packet.
-            redo
-          else
-            yield(reply, reply_name)
-          end
+          yield(reply, reply_name)
           return
         when RCode::NXDomain
           raise Config::NXDomain.new(reply_name.to_s)
