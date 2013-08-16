@@ -48,7 +48,7 @@ module ElbPing
 
     # Displays usage
     def self.usage
-      puts PARSER.help
+      ElbPing::Display.out PARSER.help
       exit(false)
     end
 
@@ -76,7 +76,7 @@ module ElbPing
       end
 
       unless ARGV[0] =~ URI::regexp
-        puts "ERROR: ELB URI does not seem valid"
+        ElbPing::Display.error "ELB URI does not seem valid"
         usage
       end
 
@@ -85,16 +85,18 @@ module ElbPing
 
       ##
       # Discover ELB nodes
+      #
+      # TODO: Perhaps some retry logic
+      nameserver = OPTIONS[:nameserver]
       begin
-        nodes = ElbPing::Resolver.find_elb_nodes(elb_uri.host,
-          OPTIONS[:nameserver])
+        nodes = ElbPing::Resolver.find_elb_nodes elb_uri.host, nameserver
       rescue
-        puts "Error querying DNS for #{elb_uri.host} (NS: #{OPTIONS[:nameserver]})"
+        ElbPing::Display.error "Unable to query DNS for #{elb_uri.host} using #{nameserver}"
         exit(false)
       end
 
       if nodes.size < 1
-        puts "Could not find any ELB nodes, no pings sent."
+        ElbPing::Display.error "Could not find any ELB nodes, no pings sent"
         exit(false)
       end
 
