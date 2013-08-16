@@ -1,5 +1,7 @@
 # elbping
 
+[![Build Status](https://travis-ci.org/chooper/elbping.png?branch=master)](https://travis-ci.org/chooper/elbping)
+
 `elbping` is a tool to ping all of the nodes behind an Amazon Elastic
 Load Balancer. It only works for ELBs in HTTP and HTTPS mode and works by
 triggering an HTTP 405 (METHOD NOT ALLOWED) error caused when the ELB
