@@ -30,8 +30,8 @@ module ElbPing
         :retry => 5)
       begin
         resp = resolver.query(target, Net::DNS::ANY)
-      rescue ArgumentError
-        # For some reason this is raised on timeout
+      rescue Net::DNS::Resolver::Error, ArgumentError
+        # For some reason ArgumentError is raised on timeout in OSX
         raise "Error querying DNS: Probably a timeout"
       end
 
