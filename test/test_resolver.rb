@@ -18,29 +18,9 @@ class TestResolver< Test::Unit::TestCase
     }
   end
 
-  def test_resolve_ns_badips
-    # Kind of sucks, will probablt result in DNS errors
-    bad_ns_ips = [".1.1.1.1", "256.256.256.256"]
-    bad_ns_ips.each { |input|
-      output = nil
-      output = ElbPing::Resolver.resolve_ns input
-      assert_not_equal [input], output
-    }
-  end
-
-  def test_resolve_ns_hosts
-    hosts = { "google-public-dns-a.google.com" => "8.8.8.8",
-              "google-public-dns-b.google.com" => "8.8.4.4"}
-
-    hosts.each { |host, expected_ip|
-      resolved_ip = ElbPing::Resolver.resolve_ns host
-      assert_equal [expected_ip], resolved_ip
-    }
-  end
-
   def test_bad_queries
     ["fake.amazonaws.com", "google.com", "nxdomain.asdf"].each { |tgt|
-      assert_raise RuntimeError do
+      assert_raise Timeout::Error do
         ElbPing::Resolver.find_elb_nodes(tgt, DEFAULT_NS)
       end
     }
