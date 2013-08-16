@@ -12,7 +12,7 @@ module ElbPing
 
     # Set up default options
     OPTIONS = {}
-    OPTIONS[:verb_len]      = ENV['PING_ELB_MAXVERBLEN']    || 128
+    OPTIONS[:verb_len]      = ENV['PING_ELB_VERBLEN']       || 128
     OPTIONS[:nameserver]    = ENV['PING_ELB_NS']            || 'ns-941.amazon.com'
     OPTIONS[:count]         = ENV['PING_ELB_PINGCOUNT']     || 0
     OPTIONS[:timeout]       = ENV['PING_ELB_TIMEOUT']       || 10
