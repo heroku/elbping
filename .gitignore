@@ -1,4 +1,4 @@
-.bundle
 bundle
+vendor
 *.gem
 *.ign.sh
