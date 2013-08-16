@@ -1,9 +1,11 @@
 
 require 'resolv'
 
+# A TCP-only resolver built from `Resolv::DNS`. See the docs for what it's about.
+# http://ruby-doc.org/stdlib-1.9.3/libdoc/resolv/rdoc/Resolv/DNS.html
 class TcpDNS < Resolv::DNS
-  # This is largely a copy-paste job from mri/source/lib/resolv.rb
-  # with some of the UDP->TCP fallback logic removed
+  # Override fetch_resource to use a TCP requester instead of a UDP requester. This
+  # is mostly borrowed from `lib/resolv.rb` with the UDP->TCP fallback logic removed.
   def fetch_resource(name, typeclass)
     lazy_initialize
     request = make_tcp_requester
@@ -35,11 +37,22 @@ class TcpDNS < Resolv::DNS
 end
 
 module ElbPing
+  # Handles all DNS resolution and, more specifically, ELB node discovery
   module Resolver
+
     # Resolve an ELB address to a list of node IPs. Should always return a list
     # as long as the server responded, even if it's empty.
+    #
+    # Arguments:
+    #   target: (string)
+    #   nameservers: (array) of strings
+    #   timeout: (fixnum)
+    #
+    # Could raise:
+    # * Timeout::Error
+    # * ?
+
     def self.find_elb_nodes(target, nameservers, timeout=5)
-      # `timeout` is in seconds
       resp = nil
       Timeout::timeout(timeout) do 
         TcpDNS.open :nameserver => nameservers, :search => '', :ndots => 1 do |dns|
@@ -51,4 +64,3 @@ module ElbPing
     end
   end
 end
-
