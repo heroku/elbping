@@ -55,14 +55,6 @@ module ElbPing
       PARSER.parse!(ARGV) rescue usage
       run = true
 
-      # Set up summary objects
-      total_summary = {
-        :reqs_attempted =>  0,
-        :reqs_completed =>  0,
-        :latencies      => [],
-      }
-      node_summary = {}
-
       # Catch ctrl-c
       trap("SIGINT") {
         run = false
@@ -91,6 +83,13 @@ module ElbPing
         exit(false)
       end
 
+      # Set up summary objects
+      total_summary = {
+        :reqs_attempted =>  0,
+        :reqs_completed =>  0,
+        :latencies      => [],
+      }
+      node_summary = {}
       nodes.each { |node| node_summary[node] = total_summary.clone }
 
       iteration = 0
@@ -107,7 +106,7 @@ module ElbPing
             (elb_uri.scheme == 'https'),
             OPTIONS[:verb_len], OPTIONS[:timeout])
 
-          unless status[:code] == :timeout
+          unless ![:timeout, :econnrefused, :exception].include? status[:code]
             total_summary[:reqs_completed] += 1
             total_summary[:latencies] += [status[:duration]]
             node_summary[node][:reqs_completed] += 1
