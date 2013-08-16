@@ -36,21 +36,13 @@ end
 
 module ElbPing
   module Resolver
-    def self.resolve_ns(nameserver)
-      # Leftover from a resolver lib that wouldn't resolve its own nameservers
-      return [nameserver]
-    end
-
     # Resolve an ELB address to a list of node IPs. Should always return a list
     # as long as the server responded, even if it's empty.
-    def self.find_elb_nodes(target, nameserver, timeout=5)
+    def self.find_elb_nodes(target, nameservers, timeout=5)
       # `timeout` is in seconds
-      ns_addrs = resolve_ns nameserver
-
-      # Now resolve our ELB nodes
       resp = nil
       Timeout::timeout(timeout) do 
-        TcpDNS.open :nameserver => ns_addrs, :search => '', :ndots => 1 do |dns|
+        TcpDNS.open :nameserver => nameservers, :search => '', :ndots => 1 do |dns|
           # TODO: Exceptions
           resp = dns.getresources target, Resolv::DNS::Resource::IN::A
         end
