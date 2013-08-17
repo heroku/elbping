@@ -9,13 +9,13 @@ Gem::Specification.new do |s|
   s.files       = ["lib/elbping/cli.rb",
                   "lib/elbping/display.rb",
                   "lib/elbping/pinger.rb",
-                  "lib/elbping/resolver.rb"]
+                  "lib/elbping/resolver.rb",
+                  "lib/elbping/stats.rb"]
+
   s.executables << "elbping"
   s.require_paths = ["lib"]
 
-  s.add_dependency "net-dns", "~> 0.8.0"
   s.add_dependency "rake", "~> 10.0.4"
-  s.add_dependency "ipaddress", "~> 0.8.0"
 
   s.homepage    =
     'https://github.com/chooper/elbping'
