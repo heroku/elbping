@@ -1,6 +1,4 @@
 
-# TODO: Needs unit tests
-
 # An array for doing some basic stats on latencies (currently only mean)
 class LatencyBucket < Array
   def sum
@@ -8,9 +6,10 @@ class LatencyBucket < Array
   end
 
   def mean
-    i = 0
-    unless self.size == 0
-      i = (self.sum.to_f / self.size).to_i
+    if self.size == 0
+      0
+    else
+      (self.sum.to_f / self.size).to_i
     end
   end
 end

@@ -14,6 +14,7 @@ class TestResolver< Test::Unit::TestCase
     }
   end
 
+  # This might still fail from time to time :-\ Been seeing lots of failures to connect to AWS DNS
   def test_good_query
     resp = nil
     assert_nothing_raised do
