@@ -6,6 +6,7 @@ require 'uri'
 require 'elbping/pinger.rb'
 require 'elbping/resolver.rb'
 require 'elbping/display.rb'
+require 'elbping/stats.rb'
 
 module ElbPing
   # Setup and initialization for running as a CLI app happens here. Specifically, on load it will
@@ -102,13 +103,8 @@ module ElbPing
 
       ##
       # Set up summary objects for stats tracking of latency and loss
-      total_summary = {
-        :reqs_attempted =>  0,
-        :reqs_completed =>  0,
-        :latencies      => [],
-      }
-      node_summary = {}
-      nodes.each { |node| node_summary[node] = total_summary.clone }
+      stats = ElbPing::Stats.new
+      nodes.each { |node| stats.add_node node }
 
       ##
       # Run the main loop of the program
@@ -120,30 +116,22 @@ module ElbPing
         ##
         # Ping each node while tracking requests, responses, and latencies
         nodes.map { |node|
-          total_summary[:reqs_attempted] += 1
-          node_summary[node][:reqs_attempted] += 1
-
           status = ElbPing::HttpPinger.ping_node(node,
             elb_uri.port,
             (elb_uri.path == "") ? "/" : elb_uri.path,
             (elb_uri.scheme == 'https'),
             OPTIONS[:verb_len], OPTIONS[:timeout])
 
-          # Don't update counters or latencies if we encountered an error
-          unless [:timeout, :econnrefused, :exception].include? status[:code]
-            total_summary[:reqs_completed] += 1
-            total_summary[:latencies] += [status[:duration]]
-            node_summary[node][:reqs_completed] += 1
-            node_summary[node][:latencies] += [status[:duration]]
-          end
-
           # Display the response from the ping
-          ElbPing::Display.response(status)
+          ElbPing::Display.response status
+
+          # Register stats
+          stats.register status
         }
         iteration += 1
       end
       # Display the stats summary
-      ElbPing::Display.summary(total_summary, node_summary)
+      ElbPing::Display.summary stats.total, stats.nodes
     end
   end
 end
