@@ -1,4 +1,6 @@
 
+# TODO: Needs unit tests
+
 # An array for doing some basic stats on latencies (currently only mean)
 class LatencyBucket < Array
   def sum
