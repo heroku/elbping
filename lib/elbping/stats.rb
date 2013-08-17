@@ -8,7 +8,7 @@ class LatencyBucket < Array
   def mean
     i = 0
     unless self.size == 0
-      i = self.sum.to_f / self.size
+      i = (self.sum.to_f / self.size).to_i
     end
   end
 end
