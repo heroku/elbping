@@ -2,14 +2,12 @@
 
 [![Build Status](https://travis-ci.org/chooper/elbping.png?branch=master)](https://travis-ci.org/chooper/elbping)
 
-`elbping` is a tool to ping all of the nodes behind an Amazon Elastic
+`elbping` is a tool to ping all of the nodes that make up an Amazon Elastic
 Load Balancer. It only works for ELBs in HTTP and HTTPS mode and works by
 triggering an HTTP 405 (METHOD NOT ALLOWED) error caused when the ELB
-receives a HTTP verb that is too long.
-
-With minor changes, you could resolve any host name and measure the
-response time of each host listed in those A records but this was
-designed specifically with ELBs in mind.
+receives a HTTP verb that is too long. This ensures that only the round
+trip time between `elbping` and the elastic load balancer itself is
+being measured.
 
 ## Installation
 
