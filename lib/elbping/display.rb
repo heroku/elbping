@@ -44,38 +44,19 @@ module ElbPing
     #
     # Arguments:
     # * stats: (ElbPing::Stats)
-    #
-    # TODO:
-    # * Move calculations into ElbPing::Stats
 
     def self.summary(stats)
-      total_summary, node_summary = stats.total, stats.nodes
-
-      requests = total_summary[:requests]
-      responses = total_summary[:responses]
-      latencies = total_summary[:latencies]
-      loss = stats.total_loss
-
-      # Calculate mean latency
-      avg_latency = total_summary[:latencies].mean
-
-      node_summary.each { |node, summary|
-        requests = summary[:requests]
-        responses = summary[:responses]
-        latencies = summary[:latencies]
-        loss = stats.node_loss node
-
-        # Calculate mean latency for this node
-        avg_latency = node_summary[node][:latencies].mean
-
+      stats.nodes.keys.each { |node|
+        loss_pct = (stats.node_loss(node) * 100).to_i
         self.out "--- #{node} statistics ---"
-        self.out "#{requests} requests, #{responses} responses, #{loss.to_i}% loss"
-        self.out "min/avg/max = #{latencies.min}/#{avg_latency}/#{latencies.max} ms"
+        self.out "#{stats.nodes[node][:requests]} requests, #{stats.nodes[node][:responses]} responses, #{loss_pct}% loss"
+        self.out "min/avg/max = #{stats.nodes[node][:latencies].min}/#{stats.nodes[node][:latencies].mean}/#{stats.nodes[node][:latencies].max} ms"
       }
 
+      loss_pct = (stats.total_loss * 100).to_i
       self.out '--- total statistics ---'
-      self.out "#{requests} requests, #{responses} responses, #{loss.to_i}% loss"
-      self.out "min/avg/max = #{latencies.min}/#{avg_latency}/#{latencies.max} ms"
+      self.out "#{stats.total[:requests]} requests, #{stats.total[:responses]} responses, #{loss_pct}% loss"
+      self.out "min/avg/max = #{stats.total[:latencies].min}/#{stats.total[:latencies].mean}/#{stats.total[:latencies].max} ms"
     end
   end
 end
