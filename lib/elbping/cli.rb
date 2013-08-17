@@ -131,7 +131,7 @@ module ElbPing
         iteration += 1
       end
       # Display the stats summary
-      ElbPing::Display.summary stats.total, stats.nodes
+      ElbPing::Display.summary stats
     end
   end
 end

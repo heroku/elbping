@@ -43,13 +43,14 @@ module ElbPing
     # Display summary of requests, responses, and latencies (for aggregate and per-node)
     #
     # Arguments:
-    # total_summary: (hash)
-    # node_summary: (hash)
+    # * stats: (ElbPing::Stats)
     #
     # TODO:
     # * Move calculations into ElbPing::Stats
 
-    def self.summary(total_summary, node_summary)
+    def self.summary(stats)
+      total_summary, node_summary = stats.total, stats.nodes
+
       requests = total_summary[:reqs_attempted]
       responses = total_summary[:reqs_completed]
       latencies = total_summary[:latencies]
@@ -57,11 +58,7 @@ module ElbPing
       loss = (1 - (responses.to_f/requests)) * 100
 
       # Calculate mean latency
-      avg_latency = 0
-      unless latencies.size == 0
-        sum_latency = latencies.inject { |sum, el| sum + el} || 0
-        avg_latency = (sum_latency.to_f / latencies.size).to_i # ms
-      end
+      avg_latency = total_summary[:latencies].mean
 
       node_summary.each { |node, summary|
         requests = summary[:reqs_attempted]
@@ -71,11 +68,7 @@ module ElbPing
         loss = (1 - (responses.to_f/requests)) * 100
 
         # Calculate mean latency for this node
-        avg_latency = 0
-        unless latencies.size == 0
-          sum_latency = latencies.inject { |sum, el| sum + el} || 0
-          avg_latency = (sum_latency.to_f / latencies.size).to_i # ms
-        end
+        avg_latency = node_summary[node][:latencies].mean
 
         self.out "--- #{node} statistics ---"
         self.out "#{requests} requests, #{responses} responses, #{loss.to_i}% loss"

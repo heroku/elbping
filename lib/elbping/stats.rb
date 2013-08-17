@@ -1,4 +1,17 @@
 
+class LatencyBucket < Array
+  def sum
+    self.inject { |sum, el| sum + el} || 0
+  end
+
+  def mean
+    i = 0
+    unless self.size == 0
+      i = self.sum.to_f / self.size
+    end
+  end
+end
+
 module ElbPing
   # Tracks the statistics of requests sent, responses received (hence loss) and latency
   class Stats
@@ -9,7 +22,7 @@ module ElbPing
       @total = {
         :reqs_attempted =>  0,
         :reqs_completed =>  0,
-        :latencies      => [],
+        :latencies      => LatencyBucket.new,
       }
       @nodes = {}
     end
@@ -24,7 +37,7 @@ module ElbPing
         @nodes[node] = {
           :reqs_attempted =>  0,
           :reqs_completed =>  0,
-          :latencies      => [],
+          :latencies      => LatencyBucket.new,
         }
       end
     end
@@ -47,11 +60,12 @@ module ElbPing
       # Don't update response counters or latencies if we encountered an error
       unless [:timeout, :econnrefused, :exception].include? status[:code]
         @total[:reqs_completed] += 1
-        @total[:latencies] += [status[:duration]]
+        @total[:latencies] << status[:duration]
         @nodes[node][:reqs_completed] += 1
-        @nodes[node][:latencies] += [status[:duration]]
+        @nodes[node][:latencies] << status[:duration]
       end
     end
+
   end
 end
 
