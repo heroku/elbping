@@ -6,7 +6,7 @@ DEFAULT_PORT    = ENV['TEST_PORT']     || '80'
 DEFAULT_PATH    = ENV['TEST_PATH']     || '/'
 DEFAULT_SSL     = ENV['TEST_SSL']      || false
 DEFAULT_VERBLEN = ENV['TEST_VERBLEN']  || 128
-DEFAULT_TIMEOUT = ENV['TEST_TIMEOUT']  || 10
+DEFAULT_TIMEOUT = ENV['TEST_TIMEOUT']  || 3
 
 class TestHttpPinger < Test::Unit::TestCase
   def test_ping_node
