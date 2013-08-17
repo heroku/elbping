@@ -45,6 +45,9 @@ module ElbPing
     # Arguments:
     # total_summary: (hash)
     # node_summary: (hash)
+    #
+    # TODO:
+    # * Move calculations into ElbPing::Stats
 
     def self.summary(total_summary, node_summary)
       requests = total_summary[:reqs_attempted]
