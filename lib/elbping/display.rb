@@ -40,7 +40,7 @@ module ElbPing
       self.out "Response from #{node}: code=#{code.to_s} time=#{duration} ms #{exc_display}"
     end
 
-    # Display summary of requests, responses, and latencies (for aggregate and per-node)
+    # Display summary of reqs_attempted, reqs_completed, and latencies (for aggregate and per-node)
     #
     # Arguments:
     # * stats: (ElbPing::Stats)
@@ -51,32 +51,30 @@ module ElbPing
     def self.summary(stats)
       total_summary, node_summary = stats.total, stats.nodes
 
-      requests = total_summary[:reqs_attempted]
-      responses = total_summary[:reqs_completed]
+      reqs_attempted = total_summary[:reqs_attempted]
+      reqs_completed = total_summary[:reqs_completed]
       latencies = total_summary[:latencies]
-      # Calculate loss %
-      loss = (1 - (responses.to_f/requests)) * 100
+      loss = stats.total_loss
 
       # Calculate mean latency
       avg_latency = total_summary[:latencies].mean
 
       node_summary.each { |node, summary|
-        requests = summary[:reqs_attempted]
-        responses = summary[:reqs_completed]
+        reqs_attempted = summary[:reqs_attempted]
+        reqs_completed = summary[:reqs_completed]
         latencies = summary[:latencies]
-        # Calculate loss % for this node
-        loss = (1 - (responses.to_f/requests)) * 100
+        loss = stats.node_loss node
 
         # Calculate mean latency for this node
         avg_latency = node_summary[node][:latencies].mean
 
         self.out "--- #{node} statistics ---"
-        self.out "#{requests} requests, #{responses} responses, #{loss.to_i}% loss"
+        self.out "#{reqs_attempted} reqs_attempted, #{reqs_completed} reqs_completed, #{loss.to_i}% loss"
         self.out "min/avg/max = #{latencies.min}/#{avg_latency}/#{latencies.max} ms"
       }
 
       self.out '--- total statistics ---'
-      self.out "#{requests} requests, #{responses} responses, #{loss.to_i}% loss"
+      self.out "#{reqs_attempted} reqs_attempted, #{reqs_completed} reqs_completed, #{loss.to_i}% loss"
       self.out "min/avg/max = #{latencies.min}/#{avg_latency}/#{latencies.max} ms"
     end
   end

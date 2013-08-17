@@ -66,6 +66,34 @@ module ElbPing
       end
     end
 
+    # Calculates loss across all nodes
+    def total_loss
+      calc_loss @total[:reqs_completed], @total[:reqs_attempted]
+    end
+
+    # Calculates loss for a specific node
+    #
+    # Arguments:
+    # * node: (string) IP of node
+    #
+    # TODO: Handle non-existent nodes
+
+    def node_loss(node)
+      calc_loss @nodes[node][:reqs_completed], @nodes[node][:reqs_attempted]
+    end
+
+    private
+
+    # Generic function to calculate loss as a per-1 float
+    #
+    # Arguments:
+    # * responses: (number) How many responses were received (numerator)
+    # * requests: (number) How many requests were sent (denominator)
+
+    def calc_loss(responses, requests)
+      1 - (responses.to_f/requests)
+    end
+
   end
 end
 
