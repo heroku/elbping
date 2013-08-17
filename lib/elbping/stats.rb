@@ -1,8 +1,6 @@
 
 require 'elbping/latency_bucket.rb'
 
-# TODO: Needs unit tests
-
 module ElbPing
   # Tracks the statistics of requests sent, responses received (hence loss) and latency
   class Stats
