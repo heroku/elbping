@@ -1,4 +1,5 @@
 
+# An array for doing some basic stats on latencies (currently only mean)
 class LatencyBucket < Array
   def sum
     self.inject { |sum, el| sum + el} || 0
@@ -20,9 +21,9 @@ module ElbPing
 
     def initialize
       @total = {
-        :reqs_attempted =>  0,
-        :reqs_completed =>  0,
-        :latencies      => LatencyBucket.new,
+        :requests   =>  0,
+        :responses  =>  0,
+        :latencies  => LatencyBucket.new,
       }
       @nodes = {}
     end
@@ -35,9 +36,9 @@ module ElbPing
     def add_node(node)
       unless @nodes.keys.include? node
         @nodes[node] = {
-          :reqs_attempted =>  0,
-          :reqs_completed =>  0,
-          :latencies      => LatencyBucket.new,
+          :requests   =>  0,
+          :responses  =>  0,
+          :latencies  => LatencyBucket.new,
         }
       end
     end
@@ -54,21 +55,24 @@ module ElbPing
       add_node node
 
       # Update requests sent regardless of errors
-      @total[:reqs_attempted] += 1
-      @nodes[node][:reqs_attempted] += 1
+      @total[:requests] += 1
+      @nodes[node][:requests] += 1
 
       # Don't update response counters or latencies if we encountered an error
       unless [:timeout, :econnrefused, :exception].include? status[:code]
-        @total[:reqs_completed] += 1
+        # Increment counters
+        @total[:responses] += 1
+        @nodes[node][:responses] += 1
+
+        # Track latencies
         @total[:latencies] << status[:duration]
-        @nodes[node][:reqs_completed] += 1
         @nodes[node][:latencies] << status[:duration]
       end
     end
 
     # Calculates loss across all nodes
     def total_loss
-      calc_loss @total[:reqs_completed], @total[:reqs_attempted]
+      calc_loss @total[:responses], @total[:requests]
     end
 
     # Calculates loss for a specific node
@@ -79,7 +83,7 @@ module ElbPing
     # TODO: Handle non-existent nodes
 
     def node_loss(node)
-      calc_loss @nodes[node][:reqs_completed], @nodes[node][:reqs_attempted]
+      calc_loss @nodes[node][:responses], @nodes[node][:requests]
     end
 
     private
