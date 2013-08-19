@@ -52,7 +52,7 @@ something like the following will work:
   4 requests, 4 responses, 0% loss
   min/avg/max = 188/189/192 ms
   --- total statistics ---
-  4 requests, 4 responses, 0% loss
+  8 requests, 8 responses, 0% loss
   min/avg/max = 188/189/192 ms
 ```
 
