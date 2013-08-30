@@ -20,7 +20,13 @@ class TcpDNS < Resolv::DNS
           sender = senders[[candidate, nameserver, port]] =
             requester.sender(msg, candidate, nameserver, port)
         end
-        reply, reply_name = requester.request(sender, tout)
+
+        begin # HACK
+          reply, reply_name = requester.request(sender, tout)
+        rescue
+          return
+        end
+
         case reply.rcode
         when RCode::NoError
           extract_resources(reply, reply_name, typeclass, &proc)

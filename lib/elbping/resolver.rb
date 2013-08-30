@@ -26,7 +26,9 @@ module ElbPing
           resp = dns.getresources target, Resolv::DNS::Resource::IN::ANY
         end
       end
-      resp.select { |r| r.respond_to? "address" and r.address }.map { |r| r.address.to_s  }
+      if resp
+        resp.select { |r| r.respond_to? "address" and r.address }.map { |r| r.address.to_s  }
+      end
     end
   end
 end
