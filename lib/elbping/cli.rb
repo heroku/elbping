@@ -91,8 +91,9 @@ module ElbPing
       nameserver = OPTIONS[:nameserver]
       begin
         nodes = ElbPing::Resolver.find_elb_nodes elb_uri.host, nameserver
-      rescue
+      rescue StandardError => e
         ElbPing::Display.error "Unable to query DNS for #{elb_uri.host} using #{nameserver}"
+        ElbPing::Display.debug e
         exit(false)
       end
 

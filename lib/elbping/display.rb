@@ -21,6 +21,17 @@ module ElbPing
       self.out "ERROR: #{msg}"
     end
 
+    # Print debug information to the screen
+    #
+    # Arguments:
+    # * exception: (Exception object)
+
+    def self.debug(exception)
+      if ENV["DEBUG"]
+        self.out "DEBUG: #{exception.backtrace}"
+      end
+    end
+
     # Format and display the ping data given a response
     #
     # Arguments:
