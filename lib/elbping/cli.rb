@@ -117,6 +117,8 @@ module ElbPing
         ##
         # Ping each node while tracking requests, responses, and latencies
         nodes.map { |node|
+          break if not run
+
           status = ElbPing::HttpPinger.ping_node(node,
             elb_uri.port,
             (elb_uri.path == "") ? "/" : elb_uri.path,

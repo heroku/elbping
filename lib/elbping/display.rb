@@ -57,7 +57,8 @@ module ElbPing
     # * stats: (ElbPing::Stats)
 
     def self.summary(stats)
-      stats.nodes.keys.each { |node|
+      pinged_nodes = stats.nodes.keys.select { |n| stats.nodes[n][:requests] > 0 }
+      pinged_nodes.each { |node|
         loss_pct = (stats.node_loss(node) * 100).to_i
         self.out "--- #{node} statistics ---"
         self.out "#{stats.nodes[node][:requests]} requests, #{stats.nodes[node][:responses]} responses, #{loss_pct}% loss"
