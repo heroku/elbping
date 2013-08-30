@@ -6,12 +6,13 @@ require 'resolv'
 class TcpDNS < Resolv::DNS
   # Override fetch_resource to use a TCP requester instead of a UDP requester. This
   # is mostly borrowed from `lib/resolv.rb` with the UDP->TCP fallback logic removed.
-  def fetch_resource(name, typeclass)
+  def each_resource(name, typeclass, &proc)
     lazy_initialize
-    request = make_tcp_requester
-    sends = {}
+    senders = {}
+    requester = nil
     begin
       @config.resolv(name) { |candidate, tout, nameserver, port|
+        requester = make_tcp_requester(nameserver, port)
         msg = Message.new
         msg.rd = 1
         msg.add_question(candidate, typeclass)
@@ -22,7 +23,7 @@ class TcpDNS < Resolv::DNS
         reply, reply_name = requester.request(sender, tout)
         case reply.rcode
         when RCode::NoError
-          yield(reply, reply_name)
+          extract_resources(reply, reply_name, typeclass, &proc)
           return
         when RCode::NXDomain
           raise Config::NXDomain.new(reply_name.to_s)
