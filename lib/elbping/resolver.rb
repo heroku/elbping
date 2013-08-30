@@ -23,10 +23,10 @@ module ElbPing
       Timeout::timeout(timeout) do 
         TcpDNS.open :nameserver => nameservers, :search => '', :ndots => 1 do |dns|
           # TODO: Exceptions
-          resp = dns.getresources target, Resolv::DNS::Resource::IN::A
+          resp = dns.getresources target, Resolv::DNS::Resource::IN::ANY
         end
       end
-      resp.map { |r| r.address.to_s }
+      resp.select { |r| r.respond_to? "address" and r.address }.map { |r| r.address.to_s  }
     end
   end
 end
