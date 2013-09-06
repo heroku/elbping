@@ -3,3 +3,4 @@ vendor
 *.gem
 *.ign.sh
 Gemfile.lock
+.bundle
