@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
   s.executables << "elbping"
   s.require_paths = ["lib"]
 
-  s.add_dependency "rake", "~> 10.0.4"
+  s.add_development_dependency "rake", "~> 10.0.4"
 
   s.homepage    =
     'https://github.com/chooper/elbping'
