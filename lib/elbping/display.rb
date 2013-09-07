@@ -67,7 +67,7 @@ module ElbPing
 
       loss_pct = (stats.total_loss * 100).to_i
       self.out '--- total statistics ---'
-      self.out "#{stats.total[:requests]} requests, #{stats.total[:responses]} responses, #{loss_pct}% loss"
+      self.out "#{stats.total[:requests]} requests, #{stats.total[:responses]} responses, #{loss_pct}% loss, #{stats.nodes.size} nodes"
       self.out "min/avg/max = #{stats.total[:latencies].min}/#{stats.total[:latencies].mean}/#{stats.total[:latencies].max} ms"
     end
   end
