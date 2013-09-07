@@ -1,8 +1,5 @@
 #!/usr/bin/env ruby
 
-require 'rubygems'
-require 'bundler/setup'
-
 require 'elbping/cli.rb'
 
 $stderr.sync = true
