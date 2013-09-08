@@ -28,6 +28,7 @@ module ElbPing
 
     def self.debug(exception)
       if ENV["DEBUG"]
+        self.out "DEBUG: #{exception.message}"
         self.out "DEBUG: #{exception.backtrace}"
       end
     end
