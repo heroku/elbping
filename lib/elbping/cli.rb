@@ -16,7 +16,6 @@ module ElbPing
     # Set up default options
     OPTIONS = {}
     OPTIONS[:verb_len]      = ENV['PING_ELB_VERBLEN']       || 128
-    OPTIONS[:nameserver]    = ENV['PING_ELB_NS']            || 'ns-941.amazon.com'
     OPTIONS[:count]         = ENV['PING_ELB_PINGCOUNT']     || 0
     OPTIONS[:timeout]       = ENV['PING_ELB_TIMEOUT']       || 10
     OPTIONS[:wait]          = ENV['PING_ELB_WAIT']          || 0
@@ -25,10 +24,6 @@ module ElbPing
     PARSER = OptionParser.new do |opts|
       opts.banner = "Usage: #{$0} [options] <elb uri>"
 
-      opts.on("-N NAMESERVER", "--nameserver NAMESERVER",
-        "Use NAMESERVER to perform DNS queries (default: #{OPTIONS[:nameserver]})") do |ns|
-        OPTIONS[:nameserver] = ns
-      end
       opts.on("-L LENGTH", "--verb-length LENGTH", Integer,
         "Use verb LENGTH characters long (default: #{OPTIONS[:verb_len]})") do |n|
         OPTIONS[:verb_len] = n
@@ -88,11 +83,10 @@ module ElbPing
       # Discover ELB nodes
       #
       # TODO: Perhaps some retry logic
-      nameserver = OPTIONS[:nameserver]
       begin
-        nodes = ElbPing::Resolver.find_elb_nodes elb_uri.host, nameserver
+        nodes = ElbPing::Resolver.find_elb_nodes elb_uri.host
       rescue StandardError => e
-        ElbPing::Display.error "Unable to query DNS for #{elb_uri.host} using #{nameserver}"
+        ElbPing::Display.error "Unable to query DNS for #{elb_uri.host}"
         ElbPing::Display.debug e
         exit(false)
       end

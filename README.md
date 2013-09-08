@@ -31,7 +31,6 @@ something like the following will work:
 ```
   $ elbping
   Usage: ./bin/elbping [options] <elb uri>
-      -N, --nameserver NAMESERVER      Use NAMESERVER to perform DNS queries (default: ns-941.amazon.com)
       -L, --verb-length LENGTH         Use verb LENGTH characters long (default: 128)
       -W, --timeout SECONDS            Use timeout of SECONDS for HTTP requests (default: 10)
       -w, --wait SECONDS               Wait SECONDS between pings (default: 0)
@@ -52,7 +51,7 @@ something like the following will work:
   4 requests, 4 responses, 0% loss
   min/avg/max = 188/189/192 ms
   --- total statistics ---
-  8 requests, 8 responses, 0% loss
+  8 requests, 8 responses, 0% loss, 2 nodes
   min/avg/max = 188/189/192 ms
 ```
 
@@ -64,7 +63,6 @@ enviromment variables are checked and, if no command line argument
 overrides it, its value is used in place of the default:
 
 * ``PING_ELB_VERBLEN`` - Size of the HTTP verb to use when pinging an ELB
-* ``PING_ELB_NS`` - DNS server to query the list of ELB nodes from
 * ``PING_ELB_PINGCOUNT`` - The number of pings to send before exiting.  Zero means never quit.
 * ``PING_ELB_TIMEOUT`` - The connect and read timeouts to use when sending the request to the ELB node (in seconds)
 * ``PING_ELB_WAIT`` - The amount of time (in seconds) to wait between volleys of pings
