@@ -29,7 +29,7 @@ module ElbPing
         Resolv::DNS.open do |sysdns|
           resp = sysdns.getresources target, Resolv::DNS::Resource::IN::NS
           unless resp
-            raise "Could not find Amazon nameserver for ELB"
+            raise ArgumentError, "Could not find Amazon nameserver for ELB"
           end
         end
         nameservers = resp.map { |ns| ns.name.to_s }
