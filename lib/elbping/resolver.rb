@@ -50,6 +50,16 @@ module ElbPing
     def self.find_elb_nodes(target, timeout=5)
       resp = nil
 
+      unless target.end_with? ".elb.amazonaws.com"
+        Timeout::timeout(timeout) do 
+          Resolv::DNS.open do |sysdns|
+            resp = sysdns.getresources target, Resolv::DNS::Resource::IN::CNAME
+            cname = resp[0].name.to_s if resp and resp.size > 0
+            return find_elb_nodes(cname, timeout)
+          end
+        end
+      end
+
       nameservers = find_elb_ns target, timeout
 
       Timeout::timeout(timeout) do 
