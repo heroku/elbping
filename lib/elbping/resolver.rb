@@ -48,6 +48,8 @@ module ElbPing
     # * ArgumentError
 
     def self.find_elb_nodes(target, timeout=5)
+      raise ArgumentError, "Could not query DNS" if target.nil?
+
       resp = nil
 
       unless target.end_with? ".elb.amazonaws.com"
