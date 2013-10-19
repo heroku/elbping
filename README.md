@@ -1,5 +1,7 @@
 # elbping
 
+[![Gem Version](https://badge.fury.io/rb/elbping.png)](http://badge.fury.io/rb/elbping)
+
 [![Build Status](https://travis-ci.org/chooper/elbping.png?branch=master)](https://travis-ci.org/chooper/elbping)
 
 `elbping` is a tool to ping all of the nodes that make up an Amazon Elastic
