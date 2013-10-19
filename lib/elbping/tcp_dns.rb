@@ -38,7 +38,7 @@ class TcpDNS < Resolv::DNS
         end
       }
     ensure
-      requester.close
+      requester.close unless requester.nil?
     end
   end
 end
