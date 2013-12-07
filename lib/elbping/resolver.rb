@@ -31,11 +31,11 @@ module ElbPing
       end
 
       if resp.empty?
-        new_target = target.split(".")[1..-1].join('.')
-        if new_target.empty?
+        parent = target.split(".")[1..-1].join('.')
+        if parent.empty?
           raise ArgumentError, "Could not find Amazon nameserver for ELB"
         end
-        find_elb_ns(new_target, timeout)
+        find_elb_ns(parent, timeout)
       else
         resp.map { |ns| ns.name.to_s }
       end
