@@ -27,7 +27,8 @@ module ElbPing
 
       Timeout::timeout(timeout) do
         Resolv::DNS.open do |sysdns|
-          resp = sysdns.getresources target, Resolv::DNS::Resource::IN::NS
+          ns = target.split(".")[1..-1].join('.')
+          resp = sysdns.getresources ns, Resolv::DNS::Resource::IN::NS
           unless resp
             raise ArgumentError, "Could not find Amazon nameserver for ELB"
           end
@@ -64,10 +65,10 @@ module ElbPing
 
       nameservers = find_elb_ns target, timeout
 
-      Timeout::timeout(timeout) do 
+      Timeout::timeout(timeout) do
         TcpDNS.open :nameserver => nameservers, :search => '', :ndots => 1 do |dns|
           # TODO: Exceptions
-          resp = dns.getresources target, Resolv::DNS::Resource::IN::ANY
+          resp = dns.getresources "all.#{target}", Resolv::DNS::Resource::IN::A
         end
       end
       if resp
