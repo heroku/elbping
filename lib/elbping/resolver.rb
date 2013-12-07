@@ -1,4 +1,3 @@
-
 require 'resolv'
 require 'elbping/tcp_dns.rb'
 
@@ -19,7 +18,7 @@ module ElbPing
     # * ArgumentError
 
     def self.find_elb_ns(target, timeout=5)
-      resp = nil
+      resp = []
 
       unless target.end_with? ".elb.amazonaws.com"
         raise ArgumentError, "Not an Amazon ELB hostname"
@@ -28,11 +27,17 @@ module ElbPing
       Timeout::timeout(timeout) do
         Resolv::DNS.open do |sysdns|
           resp = sysdns.getresources target, Resolv::DNS::Resource::IN::NS
-          unless resp
-            raise ArgumentError, "Could not find Amazon nameserver for ELB"
-          end
         end
-        nameservers = resp.map { |ns| ns.name.to_s }
+      end
+
+      if resp.empty?
+        parent = target.split(".")[1..-1].join('.')
+        if parent.empty?
+          raise ArgumentError, "Could not find Amazon nameserver for ELB"
+        end
+        find_elb_ns(parent, timeout)
+      else
+        resp.map { |ns| ns.name.to_s }
       end
     end
 
@@ -53,7 +58,7 @@ module ElbPing
       resp = nil
 
       unless target.end_with? ".elb.amazonaws.com"
-        Timeout::timeout(timeout) do 
+        Timeout::timeout(timeout) do
           Resolv::DNS.open do |sysdns|
             resp = sysdns.getresources target, Resolv::DNS::Resource::IN::CNAME
             cname = resp[0].name.to_s if resp and resp.size > 0
@@ -64,10 +69,10 @@ module ElbPing
 
       nameservers = find_elb_ns target, timeout
 
-      Timeout::timeout(timeout) do 
+      Timeout::timeout(timeout) do
         TcpDNS.open :nameserver => nameservers, :search => '', :ndots => 1 do |dns|
           # TODO: Exceptions
-          resp = dns.getresources target, Resolv::DNS::Resource::IN::ANY
+          resp = dns.getresources "all.#{target}", Resolv::DNS::Resource::IN::A
         end
       end
       if resp

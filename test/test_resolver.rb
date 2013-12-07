@@ -1,4 +1,3 @@
-
 require 'test/unit'
 require 'elbping/resolver.rb'
 
@@ -17,7 +16,7 @@ class TestResolver< Test::Unit::TestCase
 
     resp = nil
     assert_nothing_raised do
-      resp = ElbPing::Resolver.find_elb_nodes(DEFAULT_GOOD_ELB)
+      resp = ElbPing::Resolver.find_elb_nodes(ENV['TEST_GOOD_ELB'])
     end
     # I don't actually care what the results are, only that they are a list
     assert_equal resp.class, Array
