@@ -1,5 +1,4 @@
 require 'resolv'
-require 'elbping/tcp_dns.rb'
 
 # TODO: Raise own exceptions
 
@@ -67,14 +66,17 @@ module ElbPing
         end
       end
 
-      nameservers = find_elb_ns target, timeout
+      # Resolv::DNS never completes queries successfully if you pass a list
+      # of nameservers to it
+      nameserver = find_elb_ns(target, timeout).sample
 
       Timeout::timeout(timeout) do
-        TcpDNS.open :nameserver => nameservers, :search => '', :ndots => 1 do |dns|
+        Resolv::DNS.open :nameserver => nameserver do |dns|
           # TODO: Exceptions
           resp = dns.getresources "all.#{target}", Resolv::DNS::Resource::IN::A
         end
       end
+
       if resp
         resp.select { |r| r.respond_to? "address" and r.address }.map { |r| r.address.to_s  }
       end
