@@ -1,10 +1,26 @@
 
 require "net/http"
 require "net/https"
+require "openssl"
 
 module ElbPing
   # Responsible for all HTTP ping-like functionality
   module HttpPinger
+
+    # Extract CNs from a X509 subject string
+    #
+    # Arguments:
+    # * x509_subject: (string) of cert subject
+
+    def self.cert_name(x509_subject)
+      cn_bucket = Array.new
+      x509_subject.to_a.each do |entry|
+        if entry.first == 'CN' and entry[1]
+          cn_bucket << entry[1]
+        end
+      end
+      cn_bucket
+    end
 
     # Make HTTP request to given node using custom request method and measure response time
     #
@@ -42,10 +58,18 @@ module ElbPing
 
       ##
       # Make the HTTP request and handle any errors along the way
-      error = nil
-      exc = nil
+      error, exc = nil, nil
+      req, response, cert = nil, nil, nil
+
       begin
-        response = http.request(ping_request.new(path))
+        http.start do
+          req = ping_request.new(path)
+          cert = http.peer_cert
+          response = http.request(req)
+        end
+      rescue OpenSSL::SSL::SSLError => e
+        # This probably? won't happen with VERIFY_NONE
+        error = :sslerror
       rescue Errno::ECONNREFUSED
         error = :econnrefused
       rescue Timeout::Error
@@ -59,10 +83,18 @@ module ElbPing
         error = :exception
       end
 
+      ssl_status = {}
+      if use_ssl
+        raise "No cert when SSL enabled?!" unless cert
+        ssl_status = {:sslSubject => cert_name(cert.subject),
+          :sslExpires => cert.not_after}
+      end
+
       {:code => error || response.code,
         :exception => exc,
         :node => node,
-        :duration => ((Time.now.getutc - start) * 1000).to_i} # returns in ms
+        :duration => ((Time.now.getutc - start) * 1000).to_i, # returns in ms
+      }.merge(ssl_status)
     end
   end
 end
