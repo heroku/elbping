@@ -53,7 +53,7 @@ module ElbPing
       exc_display = exc ? "exception=#{exc}" : ''
       ssl_display = (sslSubject and sslExpires) ? "ssl_cn=#{sslSubject} ssl_expires=#{sslExpires}" : ''
 
-      self.out "Response from #{node}: code=#{code.to_s} time=#{duration} ms #{ssl_display} #{exc_display}"
+      self.out "Response from: #{node.rjust(15)}: code=#{code.to_s} time=#{duration} ms #{ssl_display} #{exc_display}"
     end
 
     # Display summary of requests, responses, and latencies (for aggregate and per-node)
