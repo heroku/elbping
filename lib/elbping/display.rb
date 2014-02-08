@@ -47,9 +47,13 @@ module ElbPing
       code = status[:code]
       duration = status[:duration]
       exc = status[:exception]
-      exc_display = exc ? "exception=#{exc}" : ''
+      sslSubject = status[:sslSubject].join(',') if status[:sslSubject]
+      sslExpires = status[:sslExpires]
 
-      self.out "Response from #{node}: code=#{code.to_s} time=#{duration} ms #{exc_display}"
+      exc_display = exc ? "exception=#{exc}" : ''
+      ssl_display = (sslSubject and sslExpires) ? "ssl_cn=#{sslSubject} ssl_expires=#{sslExpires}" : ''
+
+      self.out "Response from #{node}: code=#{code.to_s} time=#{duration} ms #{ssl_display} #{exc_display}"
     end
 
     # Display summary of requests, responses, and latencies (for aggregate and per-node)
