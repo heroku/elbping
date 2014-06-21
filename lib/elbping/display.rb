@@ -51,7 +51,7 @@ module ElbPing
       sslExpires = status[:sslExpires]
 
       exc_display = exc ? "exception=#{exc}" : ''
-      ssl_display = (sslSubject and sslExpires) ? "ssl_cn=#{sslSubject} ssl_expires=#{sslExpires}" : ''
+      ssl_display = (sslSubject and sslExpires) ? "ssl cn=#{sslSubject} expires=#{sslExpires}" : ''
 
       self.out "Response from: #{node.rjust(15)}: code=#{code.to_s} time=#{duration} ms #{ssl_display} #{exc_display}"
     end
