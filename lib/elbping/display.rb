@@ -49,9 +49,10 @@ module ElbPing
       exc = status[:exception]
       sslSubject = status[:sslSubject].join(',') if status[:sslSubject]
       sslExpires = status[:sslExpires]
+      sslHostMatch = status[:sslHostMatch]
 
       exc_display = exc ? "exception=#{exc}" : ''
-      ssl_display = (sslSubject and sslExpires) ? "ssl cn=#{sslSubject} expires=#{sslExpires}" : ''
+      ssl_display = (sslSubject and sslExpires) ? "ssl cn=#{sslSubject} match=#{sslHostMatch} expires=#{sslExpires}" : ''
 
       self.out "Response from: #{node.rjust(15)}: code=#{code.to_s} time=#{duration}ms #{ssl_display} #{exc_display}"
     end

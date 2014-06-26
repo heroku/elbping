@@ -114,6 +114,7 @@ module ElbPing
           break if not run
 
           status = ElbPing::HttpPinger.ping_node(node,
+            elb_uri.host,
             elb_uri.port,
             (elb_uri.path == "") ? "/" : elb_uri.path,
             (elb_uri.scheme == 'https'),

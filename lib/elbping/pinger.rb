@@ -26,13 +26,14 @@ module ElbPing
     #
     # Arguments:
     # * node: (string) of node IP
+    # * host: (string) of hostname, used for checking SSL cert match
     # * port: (string || Fixnum) of positive integer [1, 65535]
     # * path: (string) of path to request, e.g. "/"
     # * use_ssl: (boolean) Whether or not this is HTTPS
     # * verb_len: (Fixnum) of positive integer, how long the custom HTTP verb should be
     # * timeout: (Fixnum) of positive integer, how many _seconds_ for connect and read timeouts
 
-    def self.ping_node(node, port, path, use_ssl, verb_len, timeout)
+    def self.ping_node(node, host, port, path, use_ssl, verb_len, timeout)
       ##
       # Build request class
       ping_request = Class.new(Net::HTTPRequest) do
@@ -86,8 +87,11 @@ module ElbPing
       ssl_status = {}
       if use_ssl
         raise "No cert when SSL enabled?!" unless cert
-        ssl_status = {:sslSubject => cert_name(cert.subject),
-          :sslExpires => cert.not_after}
+        ssl_status = {
+          :sslSubject => cert_name(cert.subject),
+          :sslExpires => cert.not_after,
+          :sslHostMatch => File.fnmatch(cert_name(cert.subject).first, host)
+        }
       end
 
       {:code => error || response.code,
