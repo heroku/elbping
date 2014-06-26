@@ -22,6 +22,16 @@ module ElbPing
       cn_bucket
     end
 
+    # Check if a given host matches a cert's pattern
+    #
+    # Arguments:
+    # * cert: (object) of X.509 certificate
+    # * host: (string) of a hostname to compare
+
+    def self.cert_matches?(cert, host)
+      File.fnmatch(cert_name(cert.subject).first, host)
+    end
+
     # Make HTTP request to given node using custom request method and measure response time
     #
     # Arguments:
@@ -90,7 +100,7 @@ module ElbPing
         ssl_status = {
           :sslSubject => cert_name(cert.subject),
           :sslExpires => cert.not_after,
-          :sslHostMatch => File.fnmatch(cert_name(cert.subject).first, host)
+          :sslHostMatch => cert_matches?(cert, host)
         }
       end
 
