@@ -2,6 +2,7 @@ require 'test/unit'
 require 'elbping/pinger.rb'
 
 DEFAULT_NODE    = ENV['TEST_NODE']     || '127.0.0.1'
+DEFAULT_HOST    = ENV['TEST_HOST']     || 'localhost'
 DEFAULT_PORT    = ENV['TEST_PORT']     || '80'
 DEFAULT_PATH    = ENV['TEST_PATH']     || '/'
 DEFAULT_SSL     = ENV['TEST_SSL']      || false
@@ -16,6 +17,7 @@ class TestHttpPinger < Test::Unit::TestCase
     assert_nothing_raised do
       resp = ElbPing::HttpPinger.ping_node(
         DEFAULT_NODE,
+        DEFALT_HOST,
         DEFAULT_PORT,
         DEFAULT_PATH,
         DEFAULT_SSL,
