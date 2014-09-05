@@ -2,6 +2,7 @@ require 'test/unit'
 require 'elbping/pinger.rb'
 
 DEFAULT_NODE    = ENV['TEST_NODE']     || '127.0.0.1'
+DEFAULT_HOST    = ENV['TEST_HOST']     || 'localhost'
 DEFAULT_PORT    = ENV['TEST_PORT']     || '80'
 DEFAULT_PATH    = ENV['TEST_PATH']     || '/'
 DEFAULT_SSL     = ENV['TEST_SSL']      || false
@@ -16,6 +17,7 @@ class TestHttpPinger < Test::Unit::TestCase
     assert_nothing_raised do
       resp = ElbPing::HttpPinger.ping_node(
         DEFAULT_NODE,
+        DEFAULT_HOST,
         DEFAULT_PORT,
         DEFAULT_PATH,
         DEFAULT_SSL,
@@ -30,6 +32,25 @@ class TestHttpPinger < Test::Unit::TestCase
     assert_equal resp[:node], DEFAULT_NODE
     assert_equal resp[:duration].class, Fixnum
     assert_not_equal resp[:code], nil
+  end
+end
+
+require 'openssl'
+class TestCertMatches
+  def test_wildcard
+    cert = OpenSSL::X509::Certificate.new
+    cert.subject = OpenSSL::X509::Name.parse "/CN=*.example.com"
+
+    assert ElbPing::HttpPinger.cert_matches?(cert, "www.example.com")
+    assert_false ElbPing::HttpPinger.cert_matches?(cert, "www.example.org")
+  end
+
+  def test_static
+    cert = OpenSSL::X509::Certificate.new
+    cert.subject = OpenSSL::X509::Name.parse "/CN=www.example.com"
+
+    assert ElbPing::HttpPinger.cert_matches?(cert, "www.example.com")
+    assert_false ElbPing::HttpPinger.cert_matches?(cert, "www.example.org")
   end
 end
 
