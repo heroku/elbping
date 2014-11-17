@@ -2,7 +2,7 @@
 
 [![Gem Version](https://badge.fury.io/rb/elbping.png)](http://badge.fury.io/rb/elbping)
 
-[![Build Status](https://travis-ci.org/chooper/elbping.png?branch=master)](https://travis-ci.org/chooper/elbping)
+[![Build Status](https://travis-ci.org/heroku/elbping.png?branch=master)](https://travis-ci.org/heroku/elbping)
 
 `elbping` is a tool to ping all of the nodes that make up an Amazon Elastic
 Load Balancer. It only works for ELBs in HTTP and HTTPS mode and works by
@@ -23,7 +23,7 @@ If you want to build a development version or your own branch or fork,
 something like the following will work:
 
 ```
-  $ git clone git@github.com:chooper/elbping.git
+  $ git clone git@github.com:heroku/elbping.git
   $ cd elbping
   $ bundle install
 ```
