@@ -15,6 +15,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
 
   s.add_development_dependency "rake", "~> 10.0.4"
+  s.add_development_dependency "test-unit"
 
   s.homepage    =
     'https://github.com/heroku/elbping'
