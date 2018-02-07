@@ -19,6 +19,7 @@ module ElbPing
     OPTIONS[:count]         = ENV['PING_ELB_PINGCOUNT']     || 0
     OPTIONS[:timeout]       = ENV['PING_ELB_TIMEOUT']       || 10
     OPTIONS[:wait]          = ENV['PING_ELB_WAIT']          || 0
+    OPTIONS[:list]          = false
 
     # Build parser for command line options
     PARSER = OptionParser.new do |opts|
@@ -39,6 +40,10 @@ module ElbPing
       opts.on("-c COUNT", "--count COUNT", Integer,
         "Ping each node COUNT times (default: #{OPTIONS[:count]})") do |n|
         OPTIONS[:count] = n
+      end
+      opts.on("-l", "--list", Integer,
+        "Print the IP address of each node without pinging.") do |n|
+        OPTIONS[:list] = true
       end
     end
 
@@ -89,6 +94,13 @@ module ElbPing
         ElbPing::Display.error "Unable to query DNS for #{elb_uri.host}"
         ElbPing::Display.debug e
         exit(false)
+      end
+
+      if OPTIONS[:list]
+        nodes.each do |node|
+          puts node
+        end
+        exit(true)
       end
 
       if nodes.size < 1
